@@ -305,8 +305,6 @@ fn initialize_simplex(standard: &StandardForm) -> Option<SlackForm> {
 }
 
 pub fn simplex(standard: &StandardForm) -> LPResult {
-    let eps = 1e-8;
-
     // initialize basic solution
     let mut slack = match initialize_simplex(&standard) {
         Some(slack) => slack,
@@ -314,15 +312,15 @@ pub fn simplex(standard: &StandardForm) -> LPResult {
     };
 
     // pivoting
-    while let Some(entering) = slack.c.iter().position(|&ci| ci > eps) {
-        if slack.basic.iter().all(|&i| slack.a[i][entering] <= eps) { // Blant's rule
+    while let Some(entering) = slack.c.iter().position(|&ci| ci > EPS ) {
+        if slack.basic.iter().all(|&i| slack.a[i][entering] <= EPS) { // Blant's rule
             return LPResult::Unbounded;
         }
         let mut leaving = 0;
         let mut delta = f64::INFINITY;
-        for &ii in slack.basic.iter().filter(|&i| slack.a[*i][entering] > eps) { // Blant's rule
+        for &ii in slack.basic.iter().filter(|&i| slack.a[*i][entering] > EPS) { // Blant's rule
             let dii = slack.b[ii] / slack.a[ii][entering];
-            if dii + eps < delta {
+            if dii + EPS < delta {
                 delta = dii;
                 leaving = ii;
             }
